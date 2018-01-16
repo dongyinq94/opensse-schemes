@@ -27,7 +27,7 @@
 namespace sse {
     namespace logger
     {
-        LoggerSeverity severity__ = INFO;
+        LoggerSeverity severity__ = DBG;
         std::ostream  null_stream__(0);
         
         std::unique_ptr<std::ofstream> benchmark_stream__;

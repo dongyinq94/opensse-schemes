@@ -47,6 +47,8 @@ public:
     template <typename V>
     inline bool get(const uint8_t *key, const uint8_t key_length, V &data) const;
 
+    inline bool put(const std::string key, const std::string data);
+
     template <size_t N, typename V>
     inline bool put(const std::array<uint8_t, N> &key, const V &data);
 
@@ -170,6 +172,20 @@ private:
         return s.ok();
     }
     
+    bool RockDBWrapper::put(const std::string key, const std::string data)
+    {
+       rocksdb::Status s = db_->Put(rocksdb::WriteOptions(), key, data);
+        
+        if (!s.ok()) {
+            logger::log(logger::ERROR) << "Unable to insert pair in the database: " << key << std::endl;
+            logger::log(logger::ERROR) << "Failed on pair: key=" << hex_string(key) << ", data=" << hex_string(data) << std::endl;
+
+        }
+//        assert(s.ok());
+        
+        return s.ok();
+    }
+
 
     template <size_t N, typename V>
     bool RockDBWrapper::put(const std::array<uint8_t, N> &key, const V &data)
@@ -291,7 +307,7 @@ private:
     template <typename T, class Serializer = serialization<T>>
     class RockDBListStore {
     public:
-        typedef Serializer      serializer;
+        typedef Serializer serializer;
 
         RockDBListStore() = delete;
         inline RockDBListStore(const std::string &path);

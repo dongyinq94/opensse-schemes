@@ -47,6 +47,21 @@ uint64_t xor_mask(const uint64_t in, const std::array<uint8_t, N>& mask)
     ^ (mask[7]);
 }
 
+// added by Xiangfu Song
+template <size_t N>
+std::string xor_mask(const std::string in, const std::array<uint8_t, N>& mask)
+{
+    static_assert(N >= 24, "Input array is too small."); // 8 + 16
+    
+    std::string res;
+    // convert to const char*
+    for(size_t i = 0; i < in.size(); i++){
+        res += in[i] ^ mask[i]; 
+    }
+    
+    return res;
+}
+
 
 bool is_file(const std::string& path);
 bool is_directory(const std::string& path);

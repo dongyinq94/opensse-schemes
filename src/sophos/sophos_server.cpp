@@ -152,13 +152,13 @@ std::list<index_type> SophosServer::search_parallel_full(const SearchRequest& re
     ThreadPool token_map_pool(1);
     ThreadPool decrypt_pool(1);
 
-    auto decrypt_job = [&derivation_prf, &results](const index_type r, const std::string& st_string)
+    auto decrypt_job = [&derivation_prf, &results](const index_type r, const std::string& st)
     {
-        index_type v = xor_mask(r, derivation_prf.prf(st_string + '1'));
+        index_type v = xor_mask(r, derivation_prf.prf(st + '1'));
         results.push_back(v);
     };
 
-    auto lookup_job = [&derivation_prf, &decrypt_pool, &decrypt_job, this](const std::string& st_string, const update_token_type& token)
+    auto lookup_job = [&derivation_prf, &decrypt_pool, &decrypt_job, this](const std::string& st, const update_token_type& token)
     {
         index_type r;
         
@@ -173,7 +173,7 @@ std::list<index_type> SophosServer::search_parallel_full(const SearchRequest& re
                 logger::log(logger::DBG) << "Found: " << std::hex << r << std::endl;
             }
             
-            decrypt_pool.enqueue(decrypt_job, r, st_string);
+            decrypt_pool.enqueue(decrypt_job, r, st);
 
         }else{
             logger::log(logger::ERROR) << "We were supposed to find something!" << std::endl;
