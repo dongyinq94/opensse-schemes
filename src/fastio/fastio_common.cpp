@@ -6,6 +6,13 @@
 //  Copyright © 2017 Raphael Bost. All rights reserved.
 //
 
+//
+// Forward Private Searchable Symmetric Encryption with Optimized I/O Efficiency
+//      
+//      FASTIO - by Xiangfu Song
+//      bintasong@gmail.com
+//
+
 #include "fastio_common.hpp"
 
 

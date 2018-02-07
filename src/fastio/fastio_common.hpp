@@ -18,6 +18,13 @@
 // along with Sophos.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+//
+// Forward Private Searchable Symmetric Encryption with Optimized I/O Efficiency
+//      
+//      FASTIO - by Xiangfu Song
+//      bintasong@gmail.com
+//
+
 #pragma once
 
 #include <string>
@@ -32,7 +39,7 @@ namespace sse {
 
         constexpr size_t kDerivationKeySize = 16;
         constexpr size_t kStateKeySize = 16;
-        constexpr size_t kUpdateTokenSize = 24;
+        constexpr size_t kUpdateTokenSize = 8; // should be 8
         constexpr size_t kIndexSize = 8;
         
         typedef std::string search_token_type; 

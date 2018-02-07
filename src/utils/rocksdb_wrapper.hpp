@@ -41,6 +41,9 @@ public:
     inline ~RockDBWrapper();
     
     inline bool get(const std::string &key, std::string &data) const;
+
+    inline bool get_append(const std::string &key, std::string &data) const;
+
     template <size_t N, typename V>
         inline bool get(const std::array<uint8_t, N> &key, V &data) const;
     
@@ -49,6 +52,8 @@ public:
 
     inline bool put(const std::string key, const std::string data);
 
+    inline bool remove_and_put(const std::string key, const std::string data);
+
     template <size_t N, typename V>
     inline bool put(const std::array<uint8_t, N> &key, const V &data);
 
@@ -56,6 +61,8 @@ public:
     inline bool remove(const std::array<uint8_t, N> &key);
     
     inline bool remove(const uint8_t *key, const uint8_t key_length);
+
+    inline bool remove(const std::string key);
 
     inline void flush(bool blocking = true);
     
@@ -141,6 +148,17 @@ private:
         
         return s.ok();
     }
+
+    bool RockDBWrapper::get_append(const std::string &key, std::string &data) const
+    {
+        std::string tmp;
+
+        rocksdb::Status s = db_->Get(rocksdb::ReadOptions(), key, &tmp);
+        
+        data += tmp;
+
+        return s.ok();
+    }
     
     template <size_t N, typename V>
     bool RockDBWrapper::get(const std::array<uint8_t, N> &key, V &data) const
@@ -186,6 +204,19 @@ private:
         return s.ok();
     }
 
+    bool RockDBWrapper::remove_and_put(const std::string key, const std::string data)
+    {
+        rocksdb::Status s = db_->Delete(rocksdb::WriteOptions(), key);
+        
+        s = db_->Put(rocksdb::WriteOptions(), key, data);
+        
+        if (!s.ok()) {
+            logger::log(logger::ERROR) << "Unable to insert pair in the database: " << key << std::endl;
+            logger::log(logger::ERROR) << "Failed on pair: key=" << hex_string(key) << ", data=" << hex_string(data) << std::endl;
+        }
+        
+        return s.ok();
+    }
 
     template <size_t N, typename V>
     bool RockDBWrapper::put(const std::array<uint8_t, N> &key, const V &data)
@@ -220,6 +251,15 @@ private:
         rocksdb::Slice k_s(reinterpret_cast<const char*>( key ),key_length);
         
         rocksdb::Status s = db_->Delete(rocksdb::WriteOptions(), k_s);
+        
+        return s.ok();
+    }
+
+    bool RockDBWrapper::remove(const std::string key)
+    {
+        // rocksdb::Slice k_s(reinterpret_cast<const char*>( key ),key_length);
+        
+        rocksdb::Status s = db_->Delete(rocksdb::WriteOptions(), key);
         
         return s.ok();
     }
@@ -260,13 +300,25 @@ private:
             }
         };
         
+        // bool get(const std::string &key, uint32_t &val) const;
+        
+        // bool get_and_increment(const std::string &key, uint32_t &val);
+        
+        // bool increment(const std::string &key, uint32_t default_value = 0);
+
+        // bool set(const std::string &key, uint32_t val);
+
         bool get(const std::string &key, uint32_t &val) const;
         
         bool get_and_increment(const std::string &key, uint32_t &val);
+
+        // bool get_and_increment(const std::string &key, uint32_t &val);
         
         bool increment(const std::string &key, uint32_t default_value = 0);
 
         bool set(const std::string &key, uint32_t val);
+
+        bool remove_and_set(const std::string &key, uint32_t val);
 
         bool remove_key(const std::string &key);
         

@@ -18,6 +18,12 @@
 // along with Sophos.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+//
+// Forward Private Searchable Symmetric Encryption with Optimized I/O Efficiency
+//      
+//      FASTIO - by Xiangfu Song
+//      bintasong@gmail.com
+//
 
 #pragma once
 
@@ -45,8 +51,8 @@ namespace sse {
             static std::unique_ptr<FastioClient> construct_from_directory(const std::string& dir_path);
             static std::unique_ptr<FastioClient> init_in_directory(const std::string& dir_path, uint32_t n_keywords);
             
-            FastioClient(const std::string& token_map_path, const std::string& derivation_master_key, const std::string& state_master_key);
-            FastioClient(const std::string& token_map_path, const size_t tm_setup_size);
+            FastioClient(const std::string& se_map_path, const std::string& up_map_path, const std::string& derivation_master_key, const std::string& state_master_key);
+            FastioClient(const std::string& se_map_path, const std::string& up_map_path, const size_t tm_setup_size);
 
             ~FastioClient();
             
@@ -56,8 +62,11 @@ namespace sse {
             const std::string state_derivation_key() const; 
             
             void write_keys(const std::string& dir_path) const;
+
+            bool gen_state(const std::string keyword, std::string& state);
+            // bool get_increase_update(const std::string keyword, uint32_t &se_counter);
             
-            SearchRequest   search_request(const std::string &keyword) const;
+            SearchRequest   search_request(const std::string &keyword);
             UpdateRequest   update_request(const std::string &keyword, const index_type index);
             
             std::ostream& print_stats(std::ostream& out) const;
@@ -69,14 +78,16 @@ namespace sse {
             static const std::string state_key_file__;
             
         private:
-            static const std::string counter_map_file__; 
+            static const std::string se_counter_map_file__;
+            static const std::string up_counter_map_file__; 
             
             crypto::Prf<kDerivationKeySize> k_prf_;
             crypto::Prf<kStateKeySize> s_prf_;
             
             std::string get_keyword_index(const std::string &kw) const;
                       
-            sophos::RocksDBCounter counter_map_;
+            sophos::RocksDBCounter se_counter_map_;
+            sophos::RocksDBCounter up_counter_map_;
             std::mutex token_map_mtx_;
             
         };

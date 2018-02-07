@@ -37,7 +37,7 @@ void exit_handler(int signal)
 int main(int argc, char** argv) {
 
     sse::logger::set_severity(sse::logger::INFO);
-    sse::logger::set_benchmark_file("benchmark_sophos_server.out");
+    sse::logger::set_benchmark_file("benchmark_fastio_server.out");
 
     std::signal(SIGTERM, exit_handler);
     std::signal(SIGINT, exit_handler);
@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
     opterr = 0;
     int c;
 
-    bool async_search = false;
+    bool async_search = true;
     
     std::string server_db;
     while ((c = getopt (argc, argv, "b:s")) != -1)

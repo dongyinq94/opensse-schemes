@@ -18,6 +18,12 @@
 // along with Sophos.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+//
+// Forward Private Searchable Symmetric Encryption with Optimized I/O Efficiency
+//      
+//      FASTIO - by Xiangfu Song
+//      bintasong@gmail.com
+//
 
 #pragma once
 
@@ -70,7 +76,7 @@ namespace fastio {
         
         
     private:
-        static const std::string pk_file;
+        static const std::string cache_map_file;
         static const std::string pairs_map_file;
 
         std::unique_ptr<FastioServer> server_;

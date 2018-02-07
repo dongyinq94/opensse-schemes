@@ -6,6 +6,13 @@
 //  Copyright © 2017 Raphael Bost. All rights reserved.
 //
 
+//
+// Forward Private Searchable Symmetric Encryption with Optimized I/O Efficiency
+//      
+//      FAST - by Xiangfu Song
+//      bintasong@gmail.com
+//
+
 #include "fast_common.hpp"
 
 

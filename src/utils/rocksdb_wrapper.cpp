@@ -171,6 +171,23 @@ namespace sse {
             return s.ok();
         }
 
+        bool RocksDBCounter::remove_and_set(const std::string &key, uint32_t val)
+        {
+            
+            rocksdb::Slice k_v(reinterpret_cast<const char*>(&val), sizeof(uint32_t));
+            
+            rocksdb::Status s = db_->Delete(rocksdb::WriteOptions(), key);
+
+            s = db_->Put(rocksdb::WriteOptions(), key, k_v);
+            
+            if (!s.ok()) {
+                logger::log(logger::ERROR) << "Unable to insert pair in the database: " << s.ToString() << std::endl;
+                logger::log(logger::ERROR) << "Failed on pair: key=" << hex_string(key) << ", value=" << val << std::endl;
+            }
+            
+            return s.ok();
+        }
+
         
         bool RocksDBCounter::remove_key(const std::string &key)
         {

@@ -18,7 +18,12 @@
 // along with Sophos.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-
+//
+// Forward Private Searchable Symmetric Encryption with Optimized I/O Efficiency
+//      
+//      FASTIO - by Xiangfu Song
+//      bintasong@gmail.com
+//
 
 
 #include "fastio_server_runner.hpp"
@@ -41,6 +46,7 @@ namespace sse {
     namespace fastio {
 
         const std::string FastioImpl::pairs_map_file = "pairs.dat";
+        const std::string FastioImpl::cache_map_file = "cache.dat";
 
 FastioImpl::FastioImpl(const std::string& path) :
 storage_path_(path), async_search_(true)
@@ -48,13 +54,13 @@ storage_path_(path), async_search_(true)
     if (is_directory(storage_path_)) {
         // try to initialize everything from this directory
         
-        // std::string pk_path     = storage_path_ + "/" + pk_file;
+        std::string cache_map_path = storage_path_ + "/" + cache_map_file;
         std::string pairs_map_path  = storage_path_ + "/" + pairs_map_file;
 
-        // if (!is_file(pk_path)) {
-        //     // error, the secret key file is not there
-        //     throw std::runtime_error("Missing secret key file");
-        // }
+        if (!is_directory(cache_map_path)) {
+            // error, the cache file is not there
+            throw std::runtime_error("Missing cache");
+        }
         if (!is_directory(pairs_map_path)) {
             // error, the token map data is not there
             throw std::runtime_error("Missing data");
@@ -65,7 +71,7 @@ storage_path_(path), async_search_(true)
         
         // pk_buf << pk_in.rdbuf();
 
-        server_.reset( new FastioServer(pairs_map_path) );
+        server_.reset( new FastioServer(pairs_map_path, cache_map_path) );
     }else if (exists(storage_path_)){
         // there should be nothing else than a directory at path, but we found something  ...
         throw std::runtime_error(storage_path_ + ": not a directory");
@@ -107,10 +113,11 @@ grpc::Status FastioImpl::setup(grpc::ServerContext* context,
     // however, the bucket_map constructor in FastServer's constructor can raise an exception, so we need to take care of it
     
     std::string pairs_map_path  = storage_path_ + "/" + pairs_map_file;
+    std::string cache_map_path  = storage_path_ + "/" + cache_map_file;
 
     try {
         logger::log(logger::INFO) << "Seting up with size " << message->setup_size() << std::endl;
-        server_.reset(new FastioServer(pairs_map_path, message->setup_size()));
+        server_.reset(new FastioServer(pairs_map_path, cache_map_path, message->setup_size()));
     } catch (std::exception &e) {
         logger::log(logger::ERROR) << "Error when setting up the server's core" << std::endl;
         
@@ -177,7 +184,7 @@ grpc::Status FastioImpl::sync_search(grpc::ServerContext* context,
     logger::log(logger::TRACE) << "Searching ...";
     std::list<std::string> res_list;
     
-    BENCHMARK_Q((res_list = server_->search(message_to_request(mes))),res_list.size(), PRINT_BENCH_SEARCH_PAR_NORPC)
+    BENCHMARK_Q(( res_list = server_->search_parallel(message_to_request(mes)) ), res_list.size(), PRINT_BENCH_SEARCH_PAR_NORPC)
 //    BENCHMARK_Q((res_list = server_->search_parallel(message_to_request(mes))),res_list.size(), PRINT_BENCH_SEARCH_PAR_NORPC)
 //    BENCHMARK_Q((res_list = server_->search_parallel_light(message_to_request(mes),1)),res_list.size(), PRINT_BENCH_SEARCH_PAR_NORPC)
 //    BENCHMARK_Q((res_list = server_->search_parallel(message_to_request(mes),2)),res_list.size(), PRINT_BENCH_SEARCH_PAR_NORPC)
@@ -186,7 +193,7 @@ grpc::Status FastioImpl::sync_search(grpc::ServerContext* context,
     
     for (auto& i : res_list) {
         fastio::SearchReply reply;
-        reply.set_result( i );
+        reply.set_result(i);
         
         writer->Write(reply);
     }
@@ -226,7 +233,7 @@ grpc::Status FastioImpl::async_search(grpc::ServerContext* context,
     };
 
     // TODO
-    BENCHMARK_Q((server_->search_callback( message_to_request(mes), post_callback) ),res_size, PRINT_BENCH_SEARCH_PAR_RPC)
+    BENCHMARK_Q( (server_->search_parallel_callback( message_to_request(mes), post_callback )),res_size, PRINT_BENCH_SEARCH_PAR_RPC);
 //     if (mes->add_count() >= 40) { // run the search algorithm in parallel only if there are more than 2 results
 //         BENCHMARK_Q((server_->search_parallel_callback(message_to_request(mes), post_callback, std::thread::hardware_concurrency(), 8,1)),res_size, PRINT_BENCH_SEARCH_PAR_RPC)
 // //        BENCHMARK_Q((server_->search_parallel_light_callback(message_to_request(mes), post_callback, std::thread::hardware_concurrency())),res_size, PRINT_BENCH_SEARCH_PAR_RPC)

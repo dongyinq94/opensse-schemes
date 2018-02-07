@@ -51,7 +51,7 @@ uint64_t xor_mask(const uint64_t in, const std::array<uint8_t, N>& mask)
 template <size_t N>
 std::string xor_mask(const std::string in, const std::array<uint8_t, N>& mask)
 {
-    static_assert(N >= 24, "Input array is too small."); // 8 + 16
+    static_assert(N >= 8, "Input array is too small."); // 8 + 16
     
     std::string res;
     // convert to const char*

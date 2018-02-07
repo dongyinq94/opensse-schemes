@@ -18,6 +18,13 @@
 // along with Sophos.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+//
+// Forward Private Searchable Symmetric Encryption with Optimized I/O Efficiency
+//      
+//      FAST - by Xiangfu Song
+//      bintasong@gmail.com
+//
+
 #pragma once
 
 #include <string>
