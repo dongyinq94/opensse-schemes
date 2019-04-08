@@ -110,7 +110,7 @@ namespace sse {
                 
                 val++;
             }else{
-                val = 0;
+                val = 1;
             }
             
             rocksdb::Slice k_v(reinterpret_cast<const char*>(&val), sizeof(uint32_t));

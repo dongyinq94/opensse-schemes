@@ -22,11 +22,14 @@
 #pragma once
 
 #include <functional>
+#include <stdlib.h>
+#include <time.h>
+//#include "spirt/spirt_common.hpp"
 
 //#include "sophos_client_runner.hpp"
 
 namespace sse {
     namespace sophos {
-        void gen_db(size_t N_entries, std::function<void(const std::string &, size_t)> callback);
+        void gen_db(size_t N_entries, std::function<void(const std::string &, const std::string &)> callback);
     }
 }

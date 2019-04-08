@@ -31,6 +31,8 @@
 #include <string>
 #include <iomanip>
 
+
+
 template <size_t N>
 uint64_t xor_mask(const uint64_t in, const std::array<uint8_t, N>& mask)
 {

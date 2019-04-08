@@ -50,6 +50,7 @@ namespace fast {
         
         std::list<index_type> search(const SearchRequest& req);
         void search_callback(const SearchRequest& req, std::function<void(index_type)> post_callback);
+        void Rsearch_callback(const std::vector<SearchRequest> & reqlist, std::function<void(index_type)> post_callback);
 
         void update(const UpdateRequest& req);
         

@@ -60,6 +60,16 @@ namespace sse {
             update_token_type   token;
             index_type          index;
         };
+                struct Node
+{
+    int left;
+    int right;
+    std::string name;
+    Node *leftchild;
+    Node *rightchilid;
+};
+int TRsearch(std::string * a,Node *p1,int count,int left,int right);
+std::vector<std::string> split(const std::string &s, const std::string &seperator);
         
         void gen_update_token_masks(const std::string &deriv_key, 
                                     const std::string search_token,  // st

@@ -50,6 +50,7 @@ public:
     const FastClient& client() const;
     
     std::list<index_type> search(const std::string& keyword, std::function<void(index_type)> receive_callback = NULL) const;
+    std::list<index_type> Rsearch( std::string *keyword ,int count, std::function<void(index_type)> receive_callback = NULL) const;
     void update(const std::string& keyword, index_type index);
     void async_update(const std::string& keyword, index_type index);
 

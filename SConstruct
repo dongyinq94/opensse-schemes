@@ -100,47 +100,54 @@ objects = SConscript('src/build.scons', exports='env', variant_dir='build')
 # protos = SConscript('src/protos/build.scons', exports='env', duplicate=0)
 # Depends(objects, protos)
 
-env.Depends(objects["diana"],[crypto_lib_target, db_parser_target])
-env.Depends(objects["sophos"],[crypto_lib_target , db_parser_target])
-env.Depends(objects["janus"],[crypto_lib_target, db_parser_target])
-env.Depends(objects["fast"],[crypto_lib_target , db_parser_target])
-env.Depends(objects["fastio"],[crypto_lib_target , db_parser_target])
+#env.Depends(objects["diana"],[crypto_lib_target, db_parser_target])
+#env.Depends(objects["sophos"],[crypto_lib_target , db_parser_target])
+#env.Depends(objects["janus"],[crypto_lib_target, db_parser_target])
+#env.Depends(objects["fast"],[crypto_lib_target , db_parser_target])
+#env.Depends(objects["fastio"],[crypto_lib_target , db_parser_target])
+env.Depends(objects["spirt"],[crypto_lib_target , db_parser_target])
 
 
 # clean_crypto = env.Command("clean_crypto", "", "cd third_party/crypto && scons -c lib")
 # env.Alias('clean_deps', [clean_crypto])
 
-Clean(objects["sophos"] + objects["diana"] + objects["janus"] + objects["fast"] + objects["fastio"], 'build')
+Clean( objects["spirt"], 'build')
 
 outter_env = env.Clone()
 outter_env.Append(CPPPATH = ['build'])
 
 
-sophos_debug_prog   = outter_env.Program('sophos_debug',    ['test_sophos.cpp']     + objects["sophos"])
-sophos_client       = outter_env.Program('sophos_client',   ['sophos_client.cpp']   + objects["sophos"])
-sophos_server       = outter_env.Program('sophos_server',   ['sophos_server.cpp']   + objects["sophos"])
+#sophos_debug_prog   = outter_env.Program('sophos_debug',    ['test_sophos.cpp']     + objects["sophos"])
+#sophos_client       = outter_env.Program('sophos_client',   ['sophos_client.cpp']   + objects["sophos"])
+#sophos_server       = outter_env.Program('sophos_server',   ['sophos_server.cpp']   + objects["sophos"])
 
-diana_debug_prog    = outter_env.Program('diana_debug',     ['test_diana.cpp']      + objects["diana"])
-diana_client        = outter_env.Program('diana_client',    ['diana_client.cpp']    + objects["diana"])
-diana_server        = outter_env.Program('diana_server',    ['diana_server.cpp']    + objects["diana"])
+#diana_debug_prog    = outter_env.Program('diana_debug',     ['test_diana.cpp']      + objects["diana"])
+#diana_client        = outter_env.Program('diana_client',    ['diana_client.cpp']    + objects["diana"])
+#diana_server        = outter_env.Program('diana_server',    ['diana_server.cpp']    + objects["diana"])
 
-janus_debug_prog    = outter_env.Program('janus_debug',     ['test_janus.cpp']      + objects["janus"])
+#janus_debug_prog    = outter_env.Program('janus_debug',     ['test_janus.cpp']      + objects["janus"])
 
-fast_debug_prog   = outter_env.Program('fast_debug',    ['test_fast.cpp']     + objects["fast"])
-fast_client       = outter_env.Program('fast_client',   ['fast_client.cpp']   + objects["fast"])
-fast_server       = outter_env.Program('fast_server',   ['fast_server.cpp']   + objects["fast"])
+#fast_debug_prog   = outter_env.Program('fast_debug',    ['test_fast.cpp']     + objects["fast"])
+#fast_client       = outter_env.Program('fast_client',   ['fast_client.cpp']   + objects["fast"])
+#fast_server       = outter_env.Program('fast_server',   ['fast_server.cpp']   + objects["fast"])
 
 
 #fastio_debug_prog   = outter_env.Program('fastio_debug',    ['test_fastio.cpp']     + objects["fastio"])
-fastio_client       = outter_env.Program('fastio_client',   ['fastio_client.cpp']   + objects["fastio"])
-fastio_server       = outter_env.Program('fastio_server',   ['fastio_server.cpp']   + objects["fastio"])
+#fastio_client       = outter_env.Program('fastio_client',   ['fastio_client.cpp']   + objects["fastio"])
+#fastio_server       = outter_env.Program('fastio_server',   ['fastio_server.cpp']   + objects["fastio"])
+
+#spirt_debug_prog   = outter_env.Program('spirt_debug',    ['test_spirt.cpp']     + objects["spirt"])
+spirt_client       = outter_env.Program('spirt_client',   ['spirt_client.cpp']   + objects["spirt"])
+spirt_server       = outter_env.Program('spirt_server',   ['spirt_server.cpp']   + objects["spirt"])
 
 
-env.Alias('sophos', [sophos_debug_prog, sophos_client, sophos_server])
-env.Alias('diana', [diana_debug_prog, diana_client, diana_server])
-env.Alias('janus', [janus_debug_prog])
-env.Alias('fast', [fast_debug_prog, fast_client, fast_server])
-env.Alias('fastio', [fastio_client, fastio_server])
+
+#env.Alias('sophos', [sophos_debug_prog, sophos_client, sophos_server])
+#env.Alias('diana', [diana_debug_prog, diana_client, diana_server])
+#env.Alias('janus', [janus_debug_prog])
+#env.Alias('fast', [fast_debug_prog, fast_client, fast_server])
+#env.Alias('fastio', [fastio_client, fastio_server])
+env.Alias('spirt', [spirt_client, spirt_server])
 
 
-env.Default(['sophos','diana','janus', 'fast', 'fastio'])
+env.Default(['spirt'])

@@ -151,6 +151,15 @@ std::list<index_type> FastServer::search(const SearchRequest& req)
             }
         }
     }
+
+        void FastServer::Rsearch_callback(const std::vector<fast::SearchRequest> & reqlist, std::function<void(index_type)> post_callback)
+            {
+                for(const auto& req: reqlist)
+                {
+                    FastServer::search_callback(req,post_callback);
+                }
+
+            }
     
 
 // std::list<index_type> FastServer::search_parallel_full(const SearchRequest& req)

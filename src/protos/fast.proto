@@ -12,6 +12,7 @@ rpc setup (SetupMessage) returns (google.protobuf.Empty) {}
 
 // Search
 rpc search (SearchRequestMessage) returns (stream SearchReply) {}
+rpc Rsearch (stream SearchRequestMessage) returns (stream SearchReply) {}
 
 // Update
 rpc update (UpdateRequestMessage) returns (google.protobuf.Empty) {}

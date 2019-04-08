@@ -21,14 +21,138 @@
 
 #include <stdio.h>
 #include <mutex>
+#include<iostream>
 
 #include <unistd.h>
+struct Node
+{
+    int left;
+    int right;
+    std::string name;
+    Node *leftchild;
+    Node *rightchilid;
+};
+ int count=0;
+
+int search(std::string * a,Node *p1,int left,int right)
+{
+    
+    if(p1->left == left && p1->right == right)
+    {    
+        a[count]=p1->name;
+       count++;
+        std::cout<<p1->name<<count<<std::endl;
+    }
+    else
+    {     
+    
+    
+    if(left <= p1->leftchild->right )
+   {
+       if(right <= p1->leftchild->right)
+       search(a,p1->leftchild,left,right);
+       else
+       {
+           search(a,p1->leftchild,left,p1->leftchild->right);
+           search(a,p1->rightchilid,p1->rightchilid->left,right);
+
+       }
+       
+   }
+   else
+   {
+       search(a,p1->rightchilid,left,right);
+   }
+    }
+   
+    
+    
+    return count;
+}
+std::vector<std::string> split(const std::string &s, const std::string &seperator){
+  std::vector<std::string> result;
+  typedef std::string::size_type string_size;
+  string_size i = 0;
+  
+  while(i != s.size()){
+    //找到字符串中首个不等于分隔符的字母；
+    int flag = 0;
+    while(i != s.size() && flag == 0){
+      flag = 1;
+      for(string_size x = 0; x < seperator.size(); ++x)
+    if(s[i] == seperator[x]){
+    ++i;
+    flag = 0;
+     break;
+    }
+    }
+    
+    //找到又一个分隔符，将两个分隔符之间的字符串取出；
+    flag = 0;
+    string_size j = i;
+    while(j != s.size() && flag == 0){
+      for(string_size x = 0; x < seperator.size(); ++x)
+    if(s[j] == seperator[x]){
+    flag = 1;
+    break;
+    }
+      if(flag == 0) 
+    ++j;
+    }
+    if(i != j){
+      result.push_back(s.substr(i, j-i));
+      i = j;
+    }
+  }
+  return result;
+}
 
 int main(int argc, char** argv) {
     sse::logger::set_severity(sse::logger::INFO);
     sse::logger::set_benchmark_file("benchmark_fast_client.out");
     
     sse::crypto::init_crypto_lib();
+     std::string search_arry[10];
+
+     std::string ss;
+     int left;
+    int right;
+     std::stringstream is("");
+    
+      Node a[63];
+      int count0=0;
+      int count1=0;
+      int count2=1;
+      int m=32;
+      Node *p=& a[0];
+      for(int i=0;i<63;i++)
+      {   
+          //std::cout<<count1<<std::endl;
+          //std::cout<<count2<<std::endl;
+          a[i].left = (0+count1*(m/count2));
+          a[i].right = (0+(count1+1)*(m/count2)-1);
+          a[i].name=std::to_string(a[i].left) + "to" + std::to_string(a[i].right);
+          if(count2 != m)
+          {
+          a[i].leftchild= &a[(i+1)*2-1];
+          a[i].rightchilid= &a[(i+1)*2];
+          }
+          else
+          {
+              a[i].leftchild=NULL;
+              a[i].rightchilid=NULL;
+          }
+          count1++;
+          if(count1 == count2)
+          {
+              count1=0;
+              count2=2*count2;
+          }
+          
+          
+      }
+      int search_count;
+  
     
     opterr = 0;
     int c;
@@ -127,7 +251,7 @@ int main(int argc, char** argv) {
         };
         
         client_runner->start_update_session();
-        sse::sophos::gen_db(rnd_entries_count, gen_callback);
+        //sse::sophos::gen_db(rnd_entries_count, gen_callback);
         client_runner->end_update_session();
     }
     
@@ -152,8 +276,22 @@ int main(int argc, char** argv) {
         };
         
         log_stream << "Search results: \n{";
+        std::vector<std::string> v = split(kw, "to"); //可按多个字符来分隔;
+  for(std::vector<std::string>::size_type i = 0; i != v.size(); ++i)
+    std::cout << v[i] << "011 ";
+  std::cout << std::endl;
+  char* end;
+  left=static_cast<int>(strtol(v[0].c_str(),&end,10));
+  right=static_cast<int>(strtol(v[1].c_str(),&end,10));
+      std::cout<<"?"<<left<<"?"<<right;
+      count=0;
+      search_count=search(search_arry,p,left,right);
+      std::cout<<search_count<<"scount";
+   
 
-        auto res = client_runner->search(kw, print_callback);
+            auto res = client_runner->Rsearch(search_arry, search_count,print_callback);
+     
+        
         
         log_stream << "}" << std::endl;
     }

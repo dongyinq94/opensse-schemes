@@ -127,7 +127,7 @@ int main(int argc, char** argv) {
         };
         
         client_runner->start_update_session();
-        sse::sophos::gen_db(rnd_entries_count, gen_callback);
+        //sse::sophos::gen_db(rnd_entries_count, gen_callback);
         client_runner->end_update_session();
     }
     

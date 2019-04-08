@@ -246,6 +246,57 @@ grpc::Status FastImpl::async_search(grpc::ServerContext* context,
     
     return grpc::Status::OK;
 }
+   grpc::Status FastImpl::Rsearch(grpc::ServerContext* context,grpc::ServerReaderWriter<fast::SearchReply,fast::SearchRequestMessage>* stream) 
+     {
+         if (!server_) {
+        // problem, the server is already set up
+        return grpc::Status(grpc::FAILED_PRECONDITION, "The server is not set up");
+    }
+    
+    logger::log(logger::TRACE) << "Searching ...";
+
+    std::atomic_uint res_size(0);
+    
+    std::mutex writer_lock;
+    
+    SearchRequestMessage request;
+    std::vector<fast::SearchRequest> srequest;
+    while(stream->Read( &request))
+    {
+        srequest.push_back(message_to_request(&request));
+    }
+    auto post_callback = [&stream, &res_size, &writer_lock](index_type i)
+    {
+        fast::SearchReply reply;
+        reply.set_result( i );
+        std::cout<<i<<std::endl;
+        
+        writer_lock.lock();
+       stream->Write(reply);
+        writer_lock.unlock();
+
+        res_size++;
+    };
+
+    // TODO
+    BENCHMARK_Q((server_->Rsearch_callback( srequest, post_callback) ),res_size, PRINT_BENCH_SEARCH_PAR_RPC)
+//     if (mes->add_count() >= 40) { // run the search algorithm in parallel only if there are more than 2 results
+//         BENCHMARK_Q((server_->search_parallel_callback(message_to_request(mes), post_callback, std::thread::hardware_concurrency(), 8,1)),res_size, PRINT_BENCH_SEARCH_PAR_RPC)
+// //        BENCHMARK_Q((server_->search_parallel_light_callback(message_to_request(mes), post_callback, std::thread::hardware_concurrency())),res_size, PRINT_BENCH_SEARCH_PAR_RPC)
+// //        BENCHMARK_Q((server_->search_parallel_light_callback(message_to_request(mes), post_callback, 10)),res_size, PRINT_BENCH_SEARCH_PAR_RPC)
+//     }else if (mes->add_count() >= 2) {
+//                 BENCHMARK_Q((server_->search_parallel_light_callback(message_to_request(mes), post_callback, std::thread::hardware_concurrency())),res_size, PRINT_BENCH_SEARCH_PAR_RPC)
+//     }else{
+//         BENCHMARK_Q((server_->search_callback(message_to_request(mes), post_callback)),res_size, PRINT_BENCH_SEARCH_PAR_RPC)
+//     }
+    
+    logger::log(logger::TRACE) << " done" << std::endl;
+    
+    
+    return grpc::Status::OK;
+         
+
+     }
         
 
 grpc::Status FastImpl::update(grpc::ServerContext* context,

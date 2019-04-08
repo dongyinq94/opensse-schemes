@@ -162,7 +162,58 @@ std::list<index_type> FastClientRunner::search(const std::string& keyword, std::
     
     return results;
 }
+std::list<index_type> FastClientRunner::Rsearch( std::string * keyword, int count, std::function<void(index_type)> receive_callback) const
+{
+    logger::log(logger::TRACE) << "Search " << keyword << std::endl;
+    
 
+    fast::SearchRequestMessage message;
+    fast::SearchReply reply;
+
+    std::list<index_type> results;
+    
+    grpc::ClientContext context;
+    auto stream=stub_->Rsearch(&context);
+
+   
+
+   std::cout<<"??   "<<count;
+
+
+ for(int i=0;i<count;i++)
+      {
+          std::cout<<"??  messagrto ";
+              message = request_to_message(client_->search_request(keyword[i]));;
+           stream->Write(message);
+
+          
+      }  
+      stream->WritesDone();
+
+         while (stream->Read(&reply)) {
+//        logger::log(logger::TRACE) << "New result received: "
+//        << std::dec << reply.result() << std::endl;
+        results.push_back(reply.result());
+        std::cout<<"12345";
+
+        
+        if (receive_callback != NULL) {
+            receive_callback(reply.result());
+            std::cout<<"13579";
+        }
+        }
+    
+  
+    grpc::Status status = stream->Finish();
+    if (status.ok()) {
+        logger::log(logger::TRACE) << "Search succeeded." << std::endl;
+    } else {
+        logger::log(logger::ERROR) << "Search failed:" << std::endl;
+        logger::log(logger::ERROR) << status.error_message() << std::endl;
+    }
+    
+    return results;
+}
 void FastClientRunner::update(const std::string& keyword, index_type index)
 {
     grpc::ClientContext context;

@@ -52,6 +52,7 @@ namespace fast {
         grpc::Status search(grpc::ServerContext* context,
                             const fast::SearchRequestMessage* request,
                             grpc::ServerWriter<fast::SearchReply>* writer) override;
+        grpc::Status Rsearch(grpc::ServerContext* context, grpc::ServerReaderWriter<fast::SearchReply,fast::SearchRequestMessage>* stream) override;
         
         grpc::Status sync_search(grpc::ServerContext* context,
                             const fast::SearchRequestMessage* request,
