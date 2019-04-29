@@ -154,7 +154,7 @@ std::list<index_type> SpirtServer::search(const SearchRequest& req)
         }
 
         bool found = cache_.get(ut,r);
-        bool found1= cache_.remove(ut);
+        //bool found1= cache_.remove(ut);
         if(!found1)
         {
             std::cout<<"deleted cache db failed"<<std::endl;
